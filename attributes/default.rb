@@ -47,7 +47,8 @@ default[:mongodb][:init_script_template] = 'debian-mongodb.init.erb'
 default[:mongodb][:sysconfig_file] = '/etc/default/mongodb'
 default[:mongodb][:sysconfig_file_template] = 'mongodb.sysconfig.erb'
 default[:mongodb][:dbconfig_file_template] = 'mongodb.conf.erb'
-default[:mongodb][:dbconfig_file] = '/etc/mongodb.conf'
+default[:mongodb][:dbconfig_file] = '/etc/mongod.conf'
+default[:mongodb][:pidfile_dir] = '/var/run/mongo'
 
 default[:mongodb][:package_name] = 'mongodb'
 default[:mongodb][:package_version] = nil
@@ -75,7 +76,7 @@ when 'rhel', 'fedora'
   # from http://rpm.pbone.net/index.php3?stat=3&limit=1&srodzaj=3&dl=40&search=mongodb
   # verified for RHEL5,6 Fedora 18,19
   default[:mongodb][:package_name] = 'mongodb-server'
-  default[:mongodb][:sysconfig_file] = '/etc/sysconfig/mongodb'
+  default[:mongodb][:sysconfig_file] = '/etc/sysconfig/mongod'
   default[:mongodb][:user] = 'mongod'
   default[:mongodb][:group] = 'mongod'
   default[:mongodb][:init_script_template] = 'redhat-mongodb.init.erb'
