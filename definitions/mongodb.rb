@@ -88,6 +88,7 @@ define :mongodb_instance,
   new_resource.template_cookbook          = node['mongodb']['template_cookbook']
   new_resource.ulimit                     = node['mongodb']['ulimit']
   new_resource.reload_action              = node['mongodb']['reload_action']
+  new_resource.pidfile_dir                = node['mongodb']['pidfile_dir']
 
   if node['mongodb']['apt_repo'] == 'ubuntu-upstart'
     new_resource.init_file = File.join(node['mongodb']['init_dir'], "#{new_resource.name}.conf")
@@ -157,6 +158,15 @@ define :mongodb_instance,
     recursive true
   end
 
+  # pidfile_dir dir [make sure it exists]
+  directory new_resource.pidfile_dir do
+    owner new_resource.mongodb_user
+    group new_resource.mongodb_group
+    mode '0755'
+    action :create
+    recursive true
+  end
+
   # dbpath dir [make sure it exists]
   directory new_resource.dbpath do
     owner new_resource.mongodb_user
@@ -175,6 +185,7 @@ define :mongodb_instance,
     owner 'root'
     mode mode
     variables(
+      :name =>           new_resource.name,
       :provides =>       provider,
       :sysconfig_file => new_resource.sysconfig_file,
       :ulimit =>         new_resource.ulimit,

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# <%= @provides %> - Startup script for mongod
+# <%= @name %> - Startup script for mongod
 
 # chkconfig: 35 85 15
 # description: Mongo is a scalable, document-oriented database.
@@ -15,7 +15,7 @@ SYSCONFIG=<%= @sysconfig_file %>
 DAEMON_USER=mongod
 ENABLE_MONGODB=yes
 
-SUBSYS_LOCK_FILE=/var/lock/subsys/<%= @provides %>
+SUBSYS_LOCK_FILE=/var/lock/subsys/<%= @name %>
 
 if [ -f "$SYSCONFIG" ]; then
     . "$SYSCONFIG"
@@ -39,8 +39,17 @@ fi
 
 start()
 {
-  echo -n $"Starting <%= @provides %>: "
+  echo -n $"Starting <%= @name %>: "
+
+  ulimit -f <%= @ulimit['fsize'] %>
+  ulimit -t <%= @ulimit['cpu'] %>
+  ulimit -v <%= @ulimit['as'] %>
+  ulimit -n <%= @ulimit['nofile'] %>
+  ulimit -m <%= @ulimit['rss'] %>
+  ulimit -u <%= @ulimit['nproc'] %>
+
   daemon --user "$DAEMON_USER" $NUMACTL $DAEMON $DAEMON_OPTS
+
   RETVAL=$?
   echo
   [ $RETVAL -eq 0 ] && touch $SUBSYS_LOCK_FILE
@@ -48,7 +57,7 @@ start()
 
 stop()
 {
-  echo -n $"Stopping <%= @provides %>: "
+  echo -n $"Stopping <%= @name %>: "
   if test "x$PIDFILE" != "x"; then
     killproc -p $PIDFILE -d 300 $DAEMON
   else
@@ -63,13 +72,6 @@ restart () {
   stop
   start
 }
-
-ulimit -f <%= @ulimit['fsize'] %>
-ulimit -t <%= @ulimit['cpu'] %>
-ulimit -v <%= @ulimit['as'] %>
-ulimit -n <%= @ulimit['nofile'] %>
-ulimit -m <%= @ulimit['rss'] %>
-ulimit -u <%= @ulimit['nproc'] %>
 
 RETVAL=0
 
